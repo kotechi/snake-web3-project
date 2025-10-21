@@ -19,8 +19,9 @@ export function SnakeGame({ onGameOver, onScoreUpdate }: SnakeGameProps) {
   });
 
   const directionRef = useRef<Direction>('RIGHT');
-  const nextDirectionRef = useRef<Direction | null>(null); // Queue untuk direction berikutnya
+  const nextDirectionRef = useRef<Direction | null>(null);
   const gameLoopRef = useRef<number | null>(null);
+  const gameOverCalledRef = useRef<boolean>(false); // Tambahkan flag untuk mencegah double call
 
   // Generate random food position
   const generateFood = useCallback((snake: Position[]): Position => {
@@ -80,9 +81,15 @@ export function SnakeGame({ onGameOver, onScoreUpdate }: SnakeGameProps) {
       }
 
       // Check collision dengan snake lengkap (termasuk head baru)
-      const tempSnake = [head, ...prevState.snake];
-      if (checkCollision(head, prevState.snake)) { // Check vs body lama
-        onGameOver(prevState.score);
+      if (checkCollision(head, prevState.snake)) {
+        // Gunakan flag untuk mencegah double call
+        if (!gameOverCalledRef.current) {
+          gameOverCalledRef.current = true;
+          // Call onGameOver menggunakan setTimeout untuk memastikan hanya dipanggil sekali
+          setTimeout(() => {
+            onGameOver(prevState.score);
+          }, 0);
+        }
         return { ...prevState, isPlaying: false, isGameOver: true };
       }
 
@@ -184,6 +191,7 @@ export function SnakeGame({ onGameOver, onScoreUpdate }: SnakeGameProps) {
   const startGame = () => {
     directionRef.current = 'RIGHT';
     nextDirectionRef.current = null;
+    gameOverCalledRef.current = false; // Reset flag saat start game
     setGameState({
       snake: [{ x: 10, y: 10 }],
       food: generateFood([{ x: 10, y: 10 }]),
@@ -196,6 +204,7 @@ export function SnakeGame({ onGameOver, onScoreUpdate }: SnakeGameProps) {
   };
 
   const resetGame = () => {
+    gameOverCalledRef.current = false; // Reset flag saat reset game
     setGameState(prev => ({
       ...prev,
       isPlaying: false,
@@ -214,8 +223,8 @@ export function SnakeGame({ onGameOver, onScoreUpdate }: SnakeGameProps) {
       <div
         className="relative border-4 border-green-500 bg-gray-900 rounded-lg shadow-lg"
         style={{
-          width: GAME_CONFIG.gridSize * GAME_CONFIG.cellSize,
-          height: GAME_CONFIG.gridSize * GAME_CONFIG.cellSize,
+          width: GAME_CONFIG.gridSize * GAME_CONFIG.cellSize + 10,
+          height: GAME_CONFIG.gridSize * GAME_CONFIG.cellSize + 10,
         }}
       >
         {/* Grid lines untuk desain lebih baik */}
@@ -244,14 +253,14 @@ export function SnakeGame({ onGameOver, onScoreUpdate }: SnakeGameProps) {
           />
         ))}
 
-        {/* Food (apple) - diperkecil lagi */}
+        {/* Food (apple) */}
         <div
           className="absolute bg-red-500 rounded-full shadow-lg animate-pulse"
           style={{
-            left: gameState.food.x * GAME_CONFIG.cellSize + GAME_CONFIG.cellSize / 2 - 4, // Center dan kecilkan
+            left: gameState.food.x * GAME_CONFIG.cellSize + GAME_CONFIG.cellSize / 2 - 4,
             top: gameState.food.y * GAME_CONFIG.cellSize + GAME_CONFIG.cellSize / 2 - 4,
-            width: 8, // Lebih kecil dari cellSize
-            height: 8,
+            width: 10,
+            height: 10,
           }}
         />
 

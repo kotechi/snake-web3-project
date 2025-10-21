@@ -2,28 +2,30 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ConnectWallet } from '../components/connect-wallet';
 import { useWallet } from '../hooks/use-wallet';
+import { useNotification } from '../components/NotificationContext';
 import { contractInstance } from '../lib/stellar-contract';
 import { ArrowLeft, PlayCircle, StopCircle, AlertCircle, Trophy, Users, Coins } from 'lucide-react';
 import type { Competition } from '../lib/types';
-import { signTransaction } from '~/config/wallet.client';
 
 const ADMIN_ADDRESS = 'GDC6STZRTFF7GY7WWJ3G7FUZ6FX62YGYUTUWKLXU724D2TFDQGI2NZY6';
 
 export default function AdminPage() {
   const navigate = useNavigate();
   const { address, isConnected } = useWallet();
+  const { addNotification } = useNotification();
   const [competition, setCompetition] = useState<Competition | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   
   // Form states
   const [sessionId, setSessionId] = useState('');
   const [durationHours, setDurationHours] = useState('24');
-  const [entryFee, setEntryFee] = useState(''); // Tambahkan state untuk entry fee
+  const [entryFee, setEntryFee] = useState('');
 
   useEffect(() => {
     // Check if user is admin
     if (isConnected && address !== '-' && address !== ADMIN_ADDRESS) {
-      alert('Unauthorized: Admin access only');
+      addNotification('error', 'Unauthorized: Admin access only');
       navigate('/');
     }
   }, [isConnected, address, navigate]);
@@ -47,12 +49,12 @@ export default function AdminPage() {
     e.preventDefault();
     
     if (!isConnected || address === '-') {
-      alert('Please connect your wallet first');
+      addNotification('warning', 'Please connect your wallet first');
       return;
     }
 
     if (!sessionId || !durationHours || !entryFee) {
-      alert('Please fill in all fields');
+      addNotification('warning', 'Please fill in all fields');
       return;
     }
 
@@ -64,20 +66,20 @@ export default function AdminPage() {
         address,
         parseInt(sessionId),
         deadline,
-        parseFloat(entryFee), // Tambahkan entryFee
+        parseFloat(entryFee),
       );
 
       if (success) {
-        alert('Competition created successfully!');
+        addNotification('success', 'Competition created successfully!');
         setSessionId('');
-        setEntryFee(''); // Reset
+        setEntryFee('');
         await loadCompetition();
       } else {
-        alert('Failed to create competition');
+        addNotification('error', 'Failed to create competition');
       }
     } catch (error) {
       console.error('Error creating competition:', error);
-      alert('Error: ' + (error as Error).message);
+      addNotification('error', `Error: ${(error as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -85,27 +87,25 @@ export default function AdminPage() {
 
   const handleEndCompetition = async () => {
     if (!isConnected || address === '-') {
-      alert('Please connect your wallet first');
+      addNotification('warning', 'Please connect your wallet first');
       return;
     }
 
-    if (!confirm('Are you sure you want to end this competition? This will distribute prizes to winners.')) {
-      return;
-    }
-
+    setShowConfirmModal(false);
     setLoading(true);
+    
     try {
       const success = await contractInstance.endCompetition(address);
 
       if (success) {
-        alert('Competition ended successfully! Prizes distributed.');
+        addNotification('success', 'Competition ended successfully! Prizes distributed.');
         await loadCompetition();
       } else {
-        alert('Failed to end competition');
+        addNotification('error', 'Failed to end competition');
       }
     } catch (error) {
       console.error('Error ending competition:', error);
-      alert('Error: ' + (error as Error).message);
+      addNotification('error', `Error: ${(error as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -142,6 +142,32 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full border border-gray-700">
+            <h3 className="text-xl font-bold mb-4">Confirm End Competition</h3>
+            <p className="text-gray-300 mb-6">
+              Are you sure you want to end this competition? This will distribute prizes to winners automatically.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEndCompetition}
+                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-bold transition"
+              >
+                Yes, End It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-8 py-4 flex justify-between items-center">
@@ -213,7 +239,7 @@ export default function AdminPage() {
             {isActive && (
               <div className="mt-6">
                 <button
-                  onClick={handleEndCompetition}
+                  onClick={() => setShowConfirmModal(true)}
                   disabled={loading}
                   className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-bold transition disabled:opacity-50 flex items-center justify-center gap-2"
                 >

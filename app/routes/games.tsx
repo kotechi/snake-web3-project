@@ -3,13 +3,14 @@ import { Link } from 'react-router';
 import { SnakeGame } from '../components/SnakeGames';
 import { ConnectWallet } from '../components/connect-wallet';
 import { useWallet } from '../hooks/use-wallet';
+import { useNotification } from '../components/NotificationContext';
 import { contractInstance } from '../lib/stellar-contract';
 import { Trophy, ArrowLeft, Coins } from 'lucide-react';
 import type { Competition, PlayerScore } from '../lib/types';
-import { signTransaction } from '~/config/wallet.client';
 
 export default function GamePage() {
   const { address, isConnected } = useWallet();
+  const { addNotification } = useNotification();
   const [currentScore, setCurrentScore] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [entryFee, setEntryFee] = useState('0');
@@ -63,59 +64,65 @@ export default function GamePage() {
     }
   };
 
-
   const handlePayEntry = async () => {
     if (!isConnected || !address || address === '-') {
-      alert('Please connect your wallet first!');
+      addNotification('warning', 'Please connect your wallet first!');
       return;
     }
+    
     setIsPaying(true);
     try {
-      const success = await contractInstance.payEntryFee(address); // Ganti dengan signTransaction dari wallet
+      const success = await contractInstance.payEntryFee(address);
       
       if (success) {
         setHasPaid(true);
-        alert('Entry fee paid successfully! You can now play the game.');
+        addNotification('success', 'Entry fee paid successfully! You can now play the game.');
         await loadPlayerStats();
         await loadCompetitionData();
       } else {
-        alert('Failed to pay entry fee. Please try again.');
+        addNotification('error', 'Failed to pay entry fee. Please try again.');
       }
     } catch (error) {
       console.error('Error paying entry fee:', error);
-      alert('Error paying entry fee: ' + (error as Error).message);
+      addNotification('error', `Error paying entry fee: ${(error as Error).message}`);
     } finally {
       setIsPaying(false);
     }
   };
 
   const handleGameOver = async (finalScore: number) => {
-    if (!hasPaid) {
-      alert('Please pay entry fee first!');
+    // Prevent double submission
+    if (isSubmitting) {
+      console.log('Already submitting, skipping...');
       return;
     }
+
+    if (!hasPaid) {
+      addNotification('warning', 'Please pay entry fee first!');
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      const success = await contractInstance.submitScore(address, finalScore); // Ganti dengan signTransaction
+      const success = await contractInstance.submitScore(address, finalScore);
       
       if (success) {
-        alert(`Score ${finalScore} submitted successfully!`);
+        addNotification('success', `Score ${finalScore} submitted successfully!`);
         await loadPlayerStats();
         await loadCompetitionData();
         
         setHasPaid(false); // Reset setelah submit
       } else {
-        alert('Failed to submit score. Please try again.');
+        addNotification('error', 'Failed to submit score. Please try again.');
       }
     } catch (error) {
       console.error('Error submitting score:', error);
-      alert('Error submitting score: ' + (error as Error).message);
+      addNotification('error', `Error submitting score: ${(error as Error).message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   const timeRemaining = competition
     ? Math.max(0, Number(competition.deadline) - Math.floor(Date.now() / 1000))
