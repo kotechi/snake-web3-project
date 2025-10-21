@@ -5,6 +5,7 @@ import { useWallet } from '../hooks/use-wallet';
 import { contractInstance } from '../lib/stellar-contract';
 import { Trophy, Gamepad2, Timer, Coins, Users, Crown } from 'lucide-react';
 import type { Competition, PlayerScore } from '../lib/types';
+import GridPatternBG from '~/components/gridpattern';
 
 export default function HomePage() {
   const { address, isConnected } = useWallet();
@@ -14,7 +15,7 @@ export default function HomePage() {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 10000); // Refresh every 10s
+    const interval = setInterval(loadData, 1000); // Refresh every 10s
     return () => clearInterval(interval);
   }, []);
 
@@ -63,10 +64,10 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
+       
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-green-500 opacity-10"></div>
-        
-        <div className="relative max-w-6xl mx-auto px-8 py-16 text-center">
+        <GridPatternBG /> 
+        <div className="relative max-w-6xl z-10 mx-auto px-8 py-16 text-center">
           <div className="mb-8">
             <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
               🐍 Snake Game Competition
@@ -79,13 +80,15 @@ export default function HomePage() {
           {/* Competition Status */}
           <div className="inline-block bg-gray-800 rounded-lg p-6 mb-8">
             {isActive ? (
-              <div className="flex items-center gap-4">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="items-center">
                 <div>
-                  <p className="text-sm text-gray-400">Competition Active</p>
-                  <p className="text-2xl font-bold text-green-400">
-                    {formatTime(timeRemaining)}
-                  </p>
+                  <p className="text-sm text-gray-400 mb-1">Competition Active</p>
+                  <div className='flex gap-4 items-center'>
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    <p className="text-2xl font-bold text-green-400">
+                      {formatTime(timeRemaining)}
+                    </p>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -137,6 +140,7 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      
 
       {/* Stats Section */}
       <div className="max-w-6xl mx-auto px-8 py-16">
@@ -273,19 +277,15 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-gray-900 border-t border-gray-800 py-8">
         <div className="max-w-6xl mx-auto px-8 text-center text-gray-400 text-sm">
-          <p className="mb-2">Powered by Stellar & Soroban Smart Contracts</p>
+          <p className="mb-2">Created by Kotechi</p>
           <p>Built with ❤️ for the blockchain gaming community</p>
           <div className="mt-4 flex justify-center gap-4 text-xs">
-            <a href="https://stellar.org" target="_blank" rel="noopener noreferrer" className="hover:text-white">
-              Stellar.org
+            <a href="https://www.instagram.com/aditiya.ftr/" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              instagram
             </a>
             <span>•</span>
-            <a href="https://soroban.stellar.org" target="_blank" rel="noopener noreferrer" className="hover:text-white">
-              Soroban Docs
-            </a>
-            <span>•</span>
-            <a href="https://freighter.app" target="_blank" rel="noopener noreferrer" className="hover:text-white">
-              Get Freighter
+            <a href="https://github.com/kotechi" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              Github
             </a>
           </div>
         </div>
