@@ -1,87 +1,114 @@
-# Welcome to React Router!
+🐍 Snake Web3 Project
 
-A modern, production-ready template for building full-stack React applications using React Router.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+(Optional — you can replace this with your actual logo image link)
 
-## Features
+🚀 Project Name
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+Snake Web3: Play-to-Win Blockchain Game
 
-## Getting Started
+👤 About Me
 
-### Installation
+Name: Aditiya Faturrahman
+Role: Web3 Developer & Game Designer
+Skills: Blockchain Development, Smart Contracts (Soroban/Stellar), React, TypeScript, and Game Design
+Goal: To merge classic gameplay with modern blockchain technology to create fun, rewarding experiences.
+Motto: “Play hard, win fair, and own your game.”
 
-Install the dependencies:
+📘 Project Description
 
-```bash
+Snake Web3 is a blockchain-based competitive Snake game built on the Stellar Soroban network.
+Players join competitions by paying an entry fee using tokens, play to achieve the highest score, and compete for a prize pool. The top three winners share rewards, while the admin receives a small percentage.
+The game integrates Web3 wallet connection, smart contract interaction, and on-chain leaderboard tracking.
+
+🌍 Vision
+
+The vision of Snake Web3 is to redefine casual gaming by connecting it with real digital ownership and fair rewards.
+Through simple yet competitive gameplay, it introduces players to blockchain in an engaging, transparent, and decentralized way.
+This project aims to inspire a future where every game move has real value, empowering both developers and players in the Web3 world.
+
+🧩 Software Development Plan
+1. Smart Contract (Soroban / Stellar)
+
+Define variables for admin, entry_fee, prize_pool, and competition.
+
+Implement functions for:
+
+create_competition()
+
+join_competition()
+
+submit_score()
+
+end_competition()
+
+Calculate prize distribution (10% admin fee, 90% split among winners).
+
+2. Frontend Development (React + Vite)
+
+Integrate Web3 wallet login (Freighter Wallet).
+
+Build gameplay interface using HTML5 Canvas.
+
+Connect frontend to smart contract methods.
+
+3. Leaderboard System
+
+Display real-time player rankings using on-chain data.
+
+4. Testing & Debugging
+
+Test smart contract and front-end interactions on Stellar Testnet.
+
+5. Deployment
+
+Deploy contract via Soroban CLI.
+
+Host front-end on Vercel.
+
+💻 Installation & Setup
+
+Follow these steps to run the project locally:
+
+# 1. Clone the repository
+git clone https://github.com/yourusername/snake-web3-project.git
+cd snake-web3-project
+
+# 2. Install dependencies
 npm install
-```
 
-### Development
+# 3. Create an .env file
+# Add your environment variables (e.g. RPC URL, contract ID)
 
-Start the development server with HMR:
-
-```bash
+# 4. Run the development server
 npm run dev
-```
 
-Your application will be available at `http://localhost:5173`.
+# 5. Open in your browser
+http://localhost:5173
 
-## Building for Production
+🐂 Project Mascot
 
-Create a production build:
+Mascot: Futuristic Bull 🐃
+Setting: Bright futuristic city
+Theme Keywords: Creating abundance, exploring new digital frontiers
+Concept Art Prompt (for ImgCreator):
 
-```bash
-npm run build
-```
+“Futuristic happy digital painting of a bull mascot in a bright, futuristic city — symbolizing abundance and new frontiers in Web3 gaming.”
 
-## Deployment
+🏆 Game Features
 
-### Docker Deployment
+Web3 Wallet Integration
 
-To build and run using Docker:
+Token-based Entry Fee
 
-```bash
-docker build -t my-app .
+On-chain Leaderboard
 
-# Run the container
-docker run -p 3000:3000 my-app
-```
+Smart Contract-driven Rewards
 
-The containerized application can be deployed to any platform that supports Docker, including:
+Fair & Transparent Competitions
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+📫 Contact
 
-### DIY Deployment
+Developer: Aditiya Faturrahman
 
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+Project Link: snake-web3-project.vercel.app
